@@ -57,6 +57,7 @@ class GoodAdapter(
             popupMenu.inflate(R.menu.popup_good)
             popupMenu.setOnMenuItemClickListener(this)
             binding.btnMore.setOnClickListener(this)
+            binding.root.setOnClickListener(this)
         }
 
         fun bind(good: Good) {
@@ -70,7 +71,10 @@ class GoodAdapter(
         }
 
         override fun onClick(view: View?) {
-            popupMenu.show()
+            when (view) {
+                binding.btnMore -> popupMenu.show()
+                binding.root -> good?.let { listener.onItemView(it) }
+            }
         }
 
         override fun onMenuItemClick(item: MenuItem?): Boolean {

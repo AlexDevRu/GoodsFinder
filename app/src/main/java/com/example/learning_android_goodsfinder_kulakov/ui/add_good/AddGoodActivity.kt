@@ -1,12 +1,14 @@
 package com.example.learning_android_goodsfinder_kulakov.ui.add_good
 
 import android.app.DatePickerDialog
+import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
+import android.text.InputType
 import android.view.View
 import android.widget.DatePicker
 import androidx.activity.result.contract.ActivityResultContracts
@@ -14,6 +16,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
+import androidx.core.view.isVisible
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -64,9 +67,23 @@ class AddGoodActivity : AppCompatActivity(), View.OnClickListener, DialogInterfa
         binding = ActivityAddGoodBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.btnSave.setOnClickListener(this)
-        binding.ivPhoto.setOnClickListener(this)
-        binding.etDate.setOnClickListener(this)
+        val editMode = intent.getBooleanExtra(EDIT, false)
+
+        binding.btnSave.isVisible = editMode
+
+        if (!editMode) {
+            binding.etName.inputType = InputType.TYPE_NULL
+            binding.etDescription.inputType = InputType.TYPE_NULL
+            binding.etWhereFound.inputType = InputType.TYPE_NULL
+            binding.etWhoFound.inputType = InputType.TYPE_NULL
+            binding.etWhereTake.inputType = InputType.TYPE_NULL
+        }
+
+        if (editMode) {
+            binding.btnSave.setOnClickListener(this)
+            binding.ivPhoto.setOnClickListener(this)
+            binding.etDate.setOnClickListener(this)
+        }
 
         observe()
     }
@@ -88,6 +105,15 @@ class AddGoodActivity : AppCompatActivity(), View.OnClickListener, DialogInterfa
         }
         viewModel.whenFound.observe(this) {
             binding.etDate.setText(Utils.formatDate(it))
+        }
+        viewModel.good.observe(this) {
+            if (it != null) {
+                binding.etName.setText(it.name)
+                binding.etDescription.setText(it.description)
+                binding.etWhereFound.setText(it.whereFound)
+                binding.etWhoFound.setText(it.whoFound)
+                binding.etWhereTake.setText(it.whereTake)
+            }
         }
     }
 
@@ -152,4 +178,16 @@ class AddGoodActivity : AppCompatActivity(), View.OnClickListener, DialogInterfa
         viewModel.save(name, description, whereFound, whoFound, whereTake)
     }
 
+    companion object {
+        const val ID = "ID"
+        private const val EDIT = "EDIT"
+
+        fun getIntent(context: Context, id: String = "", edit: Boolean = false) : Intent {
+            val intent = Intent(context, AddGoodActivity::class.java)
+            if (id.isNotBlank())
+                intent.putExtra(ID, id)
+            intent.putExtra(EDIT, edit)
+            return intent
+        }
+    }
 }

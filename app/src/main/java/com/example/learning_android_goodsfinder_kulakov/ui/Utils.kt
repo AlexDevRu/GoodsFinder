@@ -29,6 +29,16 @@ object Utils {
         getItemsFile(context).writeText(json)
     }
 
+    fun editItem(context: Context, good: Good) {
+        val items = getItems(context)
+        val newItems = items.map {
+            if (it.id == good.id) good
+            else it
+        }
+        val json = Gson().toJson(newItems)
+        getItemsFile(context).writeText(json)
+    }
+
     fun deleteItem(context: Context, good: Good) {
         val goods = getItems(context).toMutableList()
         goods.remove(good)

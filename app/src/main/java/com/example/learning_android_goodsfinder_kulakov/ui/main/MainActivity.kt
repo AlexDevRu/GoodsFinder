@@ -47,11 +47,11 @@ class MainActivity : AppCompatActivity(), GoodAdapter.Listener {
     }
 
     override fun onItemView(good: Good) {
-
+        openAddGoodActivity(good.id, false)
     }
 
     override fun onItemEdit(good: Good) {
-
+        openAddGoodActivity(good.id, true)
     }
 
     override fun onItemDelete(good: Good) {
@@ -73,8 +73,8 @@ class MainActivity : AppCompatActivity(), GoodAdapter.Listener {
         }
     }
 
-    private fun openAddGoodActivity() {
-        val intent = Intent(this, AddGoodActivity::class.java)
+    private fun openAddGoodActivity(id: String = "", edit: Boolean = false) {
+        val intent = AddGoodActivity.getIntent(this, id, edit)
         addGoodResultLauncher.launch(intent)
     }
 }

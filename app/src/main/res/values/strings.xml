@@ -1,3 +1,18 @@
 <resources>
-    <string name="app_name">Learning_Android_GoodsFinder_Kulakov</string>
+    <string name="app_name">GoodsFinder</string>
+    <string name="add">Add</string>
+
+    <string name="name">Name</string>
+    <string name="description">Description</string>
+    <string name="where_found">Where is found</string>
+    <string name="when_found">When is found</string>
+    <string name="who_found">Who found</string>
+    <string name="where_take">Where can the good be taken</string>
+    <string name="save">Save</string>
+
+    <string name="select_photo">Выбрать фото</string>
+    <string-array name="select_photo">
+        <item>Камера</item>
+        <item>Галерея</item>
+    </string-array>
 </resources>

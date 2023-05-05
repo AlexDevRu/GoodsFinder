@@ -5,16 +5,28 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import com.example.learning_android_goodsfinder_kulakov.R
 import com.example.learning_android_goodsfinder_kulakov.databinding.ActivityMainBinding
+import com.example.learning_android_goodsfinder_kulakov.models.Good
+import com.example.learning_android_goodsfinder_kulakov.ui.adapters.GoodAdapter
 import com.example.learning_android_goodsfinder_kulakov.ui.add_good.AddGoodActivity
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), GoodAdapter.Listener {
 
     private lateinit var binding: ActivityMainBinding
 
     private val viewModel by viewModels<MainViewModel>()
+
+    private val goodAdapter = GoodAdapter(this)
+
+    private val addGoodResultLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) {
+        if (it.resultCode == RESULT_OK)
+            viewModel.getItems()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,11 +35,27 @@ class MainActivity : AppCompatActivity() {
 
         binding.rvItems.setHasFixedSize(true)
 
+        binding.rvItems.adapter = goodAdapter
+
         observe()
     }
 
     private fun observe() {
+        viewModel.goods.observe(this) {
+            goodAdapter.submitList(it)
+        }
+    }
 
+    override fun onItemView(good: Good) {
+
+    }
+
+    override fun onItemEdit(good: Good) {
+
+    }
+
+    override fun onItemDelete(good: Good) {
+        viewModel.deleteItem(good)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -47,6 +75,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun openAddGoodActivity() {
         val intent = Intent(this, AddGoodActivity::class.java)
-        startActivity(intent)
+        addGoodResultLauncher.launch(intent)
     }
 }

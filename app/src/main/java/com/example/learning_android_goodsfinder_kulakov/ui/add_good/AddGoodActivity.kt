@@ -21,6 +21,7 @@ import com.bumptech.glide.Glide
 import com.example.learning_android_goodsfinder_kulakov.R
 import com.example.learning_android_goodsfinder_kulakov.databinding.ActivityAddGoodBinding
 import com.example.learning_android_goodsfinder_kulakov.ui.Extensions.stringText
+import com.example.learning_android_goodsfinder_kulakov.ui.Utils
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.io.File
@@ -34,8 +35,6 @@ class AddGoodActivity : AppCompatActivity(), View.OnClickListener, DialogInterfa
     private val viewModel by viewModels<AddGoodViewModel>()
 
     private lateinit var uri: Uri
-
-    private val simpleDateFormat = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
 
     private val cameraLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -67,7 +66,7 @@ class AddGoodActivity : AppCompatActivity(), View.OnClickListener, DialogInterfa
 
         binding.btnSave.setOnClickListener(this)
         binding.ivPhoto.setOnClickListener(this)
-        binding.tlDate.setOnClickListener(this)
+        binding.etDate.setOnClickListener(this)
 
         observe()
     }
@@ -76,6 +75,7 @@ class AddGoodActivity : AppCompatActivity(), View.OnClickListener, DialogInterfa
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.finish.collectLatest {
+                    setResult(RESULT_OK)
                     finish()
                 }
             }
@@ -87,7 +87,7 @@ class AddGoodActivity : AppCompatActivity(), View.OnClickListener, DialogInterfa
                 .into(binding.ivPhoto)
         }
         viewModel.whenFound.observe(this) {
-            binding.etDate.setText(simpleDateFormat.format(it))
+            binding.etDate.setText(Utils.formatDate(it))
         }
     }
 
@@ -100,7 +100,7 @@ class AddGoodActivity : AppCompatActivity(), View.OnClickListener, DialogInterfa
                     .setItems(R.array.select_photo, this)
                     .show()
             }
-            binding.tlDate -> {
+            binding.etDate -> {
                 val calendar = Calendar.getInstance()
                 calendar.timeInMillis = viewModel.whenFound.value ?: System.currentTimeMillis()
 

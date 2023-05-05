@@ -62,12 +62,14 @@ class AddGoodActivity : AppCompatActivity(), View.OnClickListener, DialogInterfa
         }
     }
 
+    private var editMode = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityAddGoodBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val editMode = intent.getBooleanExtra(EDIT, false)
+        editMode = intent.getBooleanExtra(EDIT, false)
 
         binding.btnSave.isVisible = editMode
 
@@ -119,7 +121,17 @@ class AddGoodActivity : AppCompatActivity(), View.OnClickListener, DialogInterfa
 
     override fun onClick(view: View?) {
         when (view) {
-            binding.btnSave -> save()
+            binding.btnSave -> {
+                if (editMode)
+                    AlertDialog.Builder(this)
+                        .setTitle(R.string.edit)
+                        .setMessage(R.string.edit_confirmation)
+                        .setPositiveButton(android.R.string.ok) { _, _ -> save() }
+                        .setNegativeButton(android.R.string.cancel) { dialog, _ -> dialog.dismiss() }
+                        .show()
+                else
+                    save()
+            }
             binding.ivPhoto -> {
                 AlertDialog.Builder(this)
                     .setTitle(R.string.select_photo)

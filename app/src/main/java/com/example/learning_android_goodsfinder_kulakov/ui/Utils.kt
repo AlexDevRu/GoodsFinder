@@ -10,11 +10,13 @@ import java.util.*
 
 object Utils {
 
-    fun getItems(context: Context) : List<Good> {
+    fun getItems(context: Context, query: String? = null) : List<Good> {
+        val normalizedQuery = query.orEmpty().trim().lowercase()
         val file = getItemsFile(context)
         val json = file.readText()
         if (json.isBlank()) return emptyList()
-        return Gson().fromJson(json, object : TypeToken<List<Good>>() {}.type)
+        val goods = Gson().fromJson<List<Good>>(json, object : TypeToken<List<Good>>() {}.type)
+        return goods.filter { it.name.trim().lowercase().contains(normalizedQuery) }
     }
 
     fun getItemById(context: Context, id: String) : Good? {

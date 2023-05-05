@@ -19,9 +19,9 @@ class MainViewModel(private val app: Application): AndroidViewModel(app) {
         getItems()
     }
 
-    fun getItems() {
+    fun getItems(query: String? = null) {
         viewModelScope.launch(Dispatchers.IO) {
-            val goods = Utils.getItems(app)
+            val goods = Utils.getItems(app, query)
             _goods.postValue(goods)
         }
     }

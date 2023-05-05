@@ -10,13 +10,13 @@
     <item
         android:id="@+id/sort"
         android:icon="@drawable/sort_black_24dp"
-        android:title="@string/add"
+        android:title="@string/sort"
         app:iconTint="@color/white"
         app:showAsAction="ifRoom" />
     <item
         android:id="@+id/search"
         android:icon="@drawable/search_black_24dp"
-        android:title="@string/add"
+        android:title="@string/search"
         app:actionViewClass="androidx.appcompat.widget.SearchView"
         app:iconTint="@color/white"
         app:showAsAction="ifRoom|collapseActionView" />

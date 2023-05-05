@@ -69,11 +69,12 @@ class AddGoodActivity : AppCompatActivity(), View.OnClickListener, DialogInterfa
         binding = ActivityAddGoodBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        editMode = intent.getBooleanExtra(EDIT, false)
+        editMode = intent.getBooleanExtra(EDIT, false) && !intent.getStringExtra(ID).isNullOrBlank()
+        val addMode = intent.getStringExtra(ID).isNullOrBlank()
 
-        binding.btnSave.isVisible = editMode
+        binding.btnSave.isVisible = editMode || addMode
 
-        if (!editMode) {
+        if (!editMode && !addMode) {
             binding.etName.inputType = InputType.TYPE_NULL
             binding.etDescription.inputType = InputType.TYPE_NULL
             binding.etWhereFound.inputType = InputType.TYPE_NULL
@@ -81,7 +82,7 @@ class AddGoodActivity : AppCompatActivity(), View.OnClickListener, DialogInterfa
             binding.etWhereTake.inputType = InputType.TYPE_NULL
         }
 
-        if (editMode) {
+        if (editMode || addMode) {
             binding.btnSave.setOnClickListener(this)
             binding.ivPhoto.setOnClickListener(this)
             binding.etDate.setOnClickListener(this)

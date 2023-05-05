@@ -1,5 +1,6 @@
 package com.example.learning_android_goodsfinder_kulakov.ui.main
 
+import android.content.DialogInterface
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
@@ -11,10 +12,11 @@ import androidx.appcompat.widget.SearchView
 import com.example.learning_android_goodsfinder_kulakov.R
 import com.example.learning_android_goodsfinder_kulakov.databinding.ActivityMainBinding
 import com.example.learning_android_goodsfinder_kulakov.models.Good
+import com.example.learning_android_goodsfinder_kulakov.models.SortOrder
 import com.example.learning_android_goodsfinder_kulakov.ui.adapters.GoodAdapter
 import com.example.learning_android_goodsfinder_kulakov.ui.add_good.AddGoodActivity
 
-class MainActivity : AppCompatActivity(), GoodAdapter.Listener, SearchView.OnQueryTextListener {
+class MainActivity : AppCompatActivity(), GoodAdapter.Listener, SearchView.OnQueryTextListener, DialogInterface.OnClickListener {
 
     private lateinit var binding: ActivityMainBinding
 
@@ -77,8 +79,20 @@ class MainActivity : AppCompatActivity(), GoodAdapter.Listener, SearchView.OnQue
                 openAddGoodActivity()
                 true
             }
+            R.id.sort -> {
+                AlertDialog.Builder(this)
+                    .setTitle(R.string.delete)
+                    .setSingleChoiceItems(R.array.sort, viewModel.sort.ordinal, this)
+                    .show()
+                true
+            }
             else -> false
         }
+    }
+
+    override fun onClick(dialog: DialogInterface?, position: Int) {
+        viewModel.sort = SortOrder.values()[position]
+        dialog?.dismiss()
     }
 
     private fun openAddGoodActivity(id: String = "", edit: Boolean = false) {

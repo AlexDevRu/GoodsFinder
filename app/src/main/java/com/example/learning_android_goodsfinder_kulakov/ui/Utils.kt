@@ -2,6 +2,7 @@ package com.example.learning_android_goodsfinder_kulakov.ui
 
 import android.content.Context
 import com.example.learning_android_goodsfinder_kulakov.models.Good
+import com.example.learning_android_goodsfinder_kulakov.models.SortOrder
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.io.File
@@ -10,13 +11,19 @@ import java.util.*
 
 object Utils {
 
-    fun getItems(context: Context, query: String? = null) : List<Good> {
+    fun getItems(context: Context, query: String? = null, sortOrder: SortOrder = SortOrder.DESC) : List<Good> {
         val normalizedQuery = query.orEmpty().trim().lowercase()
         val file = getItemsFile(context)
         val json = file.readText()
         if (json.isBlank()) return emptyList()
         val goods = Gson().fromJson<List<Good>>(json, object : TypeToken<List<Good>>() {}.type)
-        return goods.filter { it.name.trim().lowercase().contains(normalizedQuery) }
+        val filteredItems = goods.filter { it.name.trim().lowercase().contains(normalizedQuery) }
+        return when (sortOrder) {
+            SortOrder.A_Z -> filteredItems.sortedBy { it.name }
+            SortOrder.Z_A -> filteredItems.sortedByDescending { it.name }
+            SortOrder.ASC -> filteredItems.sortedBy { it.whenFound }
+            else -> filteredItems.sortedByDescending { it.whenFound }
+        }
     }
 
     fun getItemById(context: Context, id: String) : Good? {

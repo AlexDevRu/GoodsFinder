@@ -29,7 +29,7 @@ class GoodListViewModel(private val app: Application): AndroidViewModel(app) {
         getItems(query, sort)
     }
 
-    fun getItems(query: String? = null, sortOrder: SortOrder = sort) {
+    fun getItems(query: String? = this.query, sortOrder: SortOrder = sort) {
         this.query = query
         viewModelScope.launch(Dispatchers.IO) {
             val goods = Utils.getItems(app, query, sortOrder)

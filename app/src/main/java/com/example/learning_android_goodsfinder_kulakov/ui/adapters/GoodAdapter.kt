@@ -34,6 +34,7 @@ class GoodAdapter(
         fun onItemView(good: Good)
         fun onItemEdit(good: Good)
         fun onItemDelete(good: Good)
+        fun onOpenPhoto(good: Good)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ContactViewHolder {
@@ -89,6 +90,10 @@ class GoodAdapter(
                 }
                 R.id.delete -> {
                     good?.let { listener.onItemDelete(it) }
+                    true
+                }
+                R.id.openPhoto -> {
+                    good?.let { listener.onOpenPhoto(it) }
                     true
                 }
                 else -> false

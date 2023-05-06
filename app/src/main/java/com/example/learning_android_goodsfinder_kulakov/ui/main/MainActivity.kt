@@ -3,6 +3,7 @@ package com.example.learning_android_goodsfinder_kulakov.ui.main
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager.OnBackStackChangedListener
 import com.example.learning_android_goodsfinder_kulakov.R
 import com.example.learning_android_goodsfinder_kulakov.databinding.ActivityMainBinding
@@ -31,7 +32,15 @@ class MainActivity : AppCompatActivity(), OnBackStackChangedListener {
         supportActionBar?.setDisplayHomeAsUpEnabled(backStackEntryCount > 0)
     }
 
-    fun isLandscapeOrTablet() = binding.fragmentContainerRight != null
+    private fun isLandscapeOrTablet() = binding.fragmentContainerRight != null
+
+    fun setFragment(fragment: Fragment) {
+        val fragmentContainerId = if (isLandscapeOrTablet()) R.id.fragmentContainerRight else R.id.fragmentContainerLeft
+        supportFragmentManager.beginTransaction()
+            .replace(fragmentContainerId, fragment)
+            .addToBackStack(null)
+            .commit()
+    }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == android.R.id.home) {

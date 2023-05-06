@@ -18,6 +18,7 @@ import com.example.learning_android_goodsfinder_kulakov.models.SortOrder
 import com.example.learning_android_goodsfinder_kulakov.ui.adapters.GoodAdapter
 import com.example.learning_android_goodsfinder_kulakov.ui.add_good.AddGoodFragment
 import com.example.learning_android_goodsfinder_kulakov.ui.main.MainActivity
+import com.example.learning_android_goodsfinder_kulakov.ui.photos.PhotosFragment
 
 class GoodListFragment : Fragment(), GoodAdapter.Listener, MenuProvider,
     SearchView.OnQueryTextListener, DialogInterface.OnClickListener, FragmentResultListener {
@@ -59,6 +60,11 @@ class GoodListFragment : Fragment(), GoodAdapter.Listener, MenuProvider,
         openAddGoodFragment(good.id, false)
     }
 
+    override fun onOpenPhoto(good: Good) {
+        val fragment = PhotosFragment.createInstance(good.id, viewModel.sort, viewModel.query)
+        (requireActivity() as MainActivity).setFragment(fragment)
+    }
+
     override fun onItemEdit(good: Good) {
         openAddGoodFragment(good.id, true)
     }
@@ -80,14 +86,7 @@ class GoodListFragment : Fragment(), GoodAdapter.Listener, MenuProvider,
 
     private fun openAddGoodFragment(id: String? = null, edit: Boolean = false) {
         val fragment = AddGoodFragment.createInstance(id, edit)
-
-        val isLandscapeOrTablet = (requireActivity() as MainActivity).isLandscapeOrTablet()
-        val fragmentContainerId = if (isLandscapeOrTablet) R.id.fragmentContainerRight else R.id.fragmentContainerLeft
-
-        requireActivity().supportFragmentManager.beginTransaction()
-            .replace(fragmentContainerId, fragment)
-            .addToBackStack(null)
-            .commit()
+        (requireActivity() as MainActivity).setFragment(fragment)
     }
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {

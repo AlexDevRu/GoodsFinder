@@ -17,9 +17,11 @@ class MainActivity : AppCompatActivity(), OnBackStackChangedListener {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.fragmentContainerLeft, GoodListFragment())
-            .commit()
+        val fragmentsSize = supportFragmentManager.fragments.size
+        if (fragmentsSize == 0)
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.fragmentContainerLeft, GoodListFragment())
+                .commit()
 
         supportFragmentManager.addOnBackStackChangedListener(this)
     }

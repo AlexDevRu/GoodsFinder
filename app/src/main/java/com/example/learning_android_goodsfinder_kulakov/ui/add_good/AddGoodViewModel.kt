@@ -28,10 +28,10 @@ class AddGoodViewModel(
     private val _finish = MutableSharedFlow<Unit>()
     val finish = _finish.asSharedFlow()
 
-    private val goodId = savedStateHandle.get<String>(AddGoodActivity.ID)
+    private val goodId = savedStateHandle.get<String>(AddGoodFragment.ID)
 
-    private val _good = MutableLiveData<Good>()
-    val good : LiveData<Good> = _good
+    private val _good = MutableLiveData<Good?>()
+    val good : LiveData<Good?> = _good
 
     init {
         goodId?.let {
@@ -39,8 +39,10 @@ class AddGoodViewModel(
                 _loading.postValue(true)
                 val good = Utils.getItemById(app, it)
                 _good.postValue(good)
-                _imageUri.postValue(Uri.parse(good?.photo))
-                _whenFound.postValue(good?.whenFound)
+                if (good?.photo != null)
+                    _imageUri.postValue(Uri.parse(good.photo))
+                if (good?.whenFound != null)
+                    _whenFound.postValue(good.whenFound)
                 _loading.postValue(false)
             }
         }

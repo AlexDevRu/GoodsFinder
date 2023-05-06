@@ -1,7 +1,6 @@
 package com.example.learning_android_goodsfinder_kulakov.ui.add_good
 
 import android.app.DatePickerDialog
-import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.net.Uri
@@ -9,14 +8,19 @@ import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
 import android.text.InputType
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.DatePicker
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
+import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResult
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -31,7 +35,7 @@ import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 
-class AddGoodActivity : AppCompatActivity(), View.OnClickListener, DialogInterface.OnClickListener, DatePickerDialog.OnDateSetListener {
+class AddGoodFragment : Fragment(), View.OnClickListener, DialogInterface.OnClickListener, DatePickerDialog.OnDateSetListener {
 
     private lateinit var binding: ActivityAddGoodBinding
 
@@ -42,7 +46,7 @@ class AddGoodActivity : AppCompatActivity(), View.OnClickListener, DialogInterfa
     private val cameraLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) {
-        if (it.resultCode == RESULT_OK) {
+        if (it.resultCode == AppCompatActivity.RESULT_OK) {
             Glide.with(binding.ivPhoto)
                 .load(uri)
                 .into(binding.ivPhoto)
@@ -53,7 +57,7 @@ class AddGoodActivity : AppCompatActivity(), View.OnClickListener, DialogInterfa
     private val galleryLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) {
-        if (it.resultCode == RESULT_OK) {
+        if (it.resultCode == AppCompatActivity.RESULT_OK) {
             val uri = it.data?.data ?: return@registerForActivityResult
             Glide.with(binding.ivPhoto)
                 .load(uri)
@@ -64,13 +68,19 @@ class AddGoodActivity : AppCompatActivity(), View.OnClickListener, DialogInterfa
 
     private var editMode = false
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        binding = ActivityAddGoodBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        binding = ActivityAddGoodBinding.inflate(inflater, container, false)
+        return binding.root
+    }
 
-        editMode = intent.getBooleanExtra(EDIT, false) && !intent.getStringExtra(ID).isNullOrBlank()
-        val addMode = intent.getStringExtra(ID).isNullOrBlank()
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        editMode = requireArguments().getBoolean(EDIT, false) && !requireArguments().getString(ID).isNullOrBlank()
+        val addMode = requireArguments().getString(ID).isNullOrBlank()
 
         binding.btnSave.isVisible = editMode || addMode
 
@@ -95,21 +105,21 @@ class AddGoodActivity : AppCompatActivity(), View.OnClickListener, DialogInterfa
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.finish.collectLatest {
-                    setResult(RESULT_OK)
-                    finish()
+                    setFragmentResult(REQUEST_KEY, bundleOf())
+                    requireActivity().supportFragmentManager.popBackStack()
                 }
             }
         }
-        viewModel.imageUri.observe(this) {
+        viewModel.imageUri.observe(viewLifecycleOwner) {
             Glide.with(binding.ivPhoto)
                 .load(it)
                 .error(R.drawable.image_black_24dp)
                 .into(binding.ivPhoto)
         }
-        viewModel.whenFound.observe(this) {
+        viewModel.whenFound.observe(viewLifecycleOwner) {
             binding.etDate.setText(Utils.formatDate(it))
         }
-        viewModel.good.observe(this) {
+        viewModel.good.observe(viewLifecycleOwner) {
             if (it != null) {
                 binding.etName.setText(it.name)
                 binding.etDescription.setText(it.description)
@@ -124,7 +134,7 @@ class AddGoodActivity : AppCompatActivity(), View.OnClickListener, DialogInterfa
         when (view) {
             binding.btnSave -> {
                 if (editMode)
-                    AlertDialog.Builder(this)
+                    AlertDialog.Builder(requireContext())
                         .setTitle(R.string.edit)
                         .setMessage(R.string.edit_confirmation)
                         .setPositiveButton(android.R.string.ok) { _, _ -> save() }
@@ -134,7 +144,7 @@ class AddGoodActivity : AppCompatActivity(), View.OnClickListener, DialogInterfa
                     save()
             }
             binding.ivPhoto -> {
-                AlertDialog.Builder(this)
+                AlertDialog.Builder(requireContext())
                     .setTitle(R.string.select_photo)
                     .setItems(R.array.select_photo, this)
                     .show()
@@ -143,7 +153,7 @@ class AddGoodActivity : AppCompatActivity(), View.OnClickListener, DialogInterfa
                 val calendar = Calendar.getInstance()
                 calendar.timeInMillis = viewModel.whenFound.value ?: System.currentTimeMillis()
 
-                DatePickerDialog(this, this,
+                DatePickerDialog(requireContext(), this,
                     calendar.get(Calendar.YEAR),
                     calendar.get(Calendar.MONTH),
                     calendar.get(Calendar.DAY_OF_MONTH)
@@ -170,9 +180,9 @@ class AddGoodActivity : AppCompatActivity(), View.OnClickListener, DialogInterfa
     private fun openCamera() {
         val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.ENGLISH).format(System.currentTimeMillis())
-        val storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        val storageDir = requireContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES)
         val file = File.createTempFile("JPEG_${timeStamp}_",".jpg", storageDir)
-        uri = FileProvider.getUriForFile(this, "com.example.learning_android_goodsfinder_kulakov.fileprovider", file)
+        uri = FileProvider.getUriForFile(requireContext(), "com.example.learning_android_goodsfinder_kulakov.fileprovider", file)
         intent.putExtra(MediaStore.EXTRA_OUTPUT, uri)
         cameraLauncher.launch(intent)
     }
@@ -192,15 +202,17 @@ class AddGoodActivity : AppCompatActivity(), View.OnClickListener, DialogInterfa
     }
 
     companion object {
+        const val REQUEST_KEY = "AddGoodFragment"
         const val ID = "ID"
         private const val EDIT = "EDIT"
 
-        fun getIntent(context: Context, id: String = "", edit: Boolean = false) : Intent {
-            val intent = Intent(context, AddGoodActivity::class.java)
-            if (id.isNotBlank())
-                intent.putExtra(ID, id)
-            intent.putExtra(EDIT, edit)
-            return intent
+        fun createInstance(id: String? = null, edit: Boolean = false) : AddGoodFragment {
+            val fragment = AddGoodFragment()
+            fragment.arguments = bundleOf(
+                ID to id,
+                EDIT to edit
+            )
+            return fragment
         }
     }
 }

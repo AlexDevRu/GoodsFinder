@@ -9,6 +9,14 @@
         android:id="@+id/fragmentContainerLeft"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_weight="1"
         tools:layout="@layout/fragment_good_list" />
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/fragmentContainerRight"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        tools:layout="@layout/activity_add_good" />
 
 </androidx.appcompat.widget.LinearLayoutCompat>

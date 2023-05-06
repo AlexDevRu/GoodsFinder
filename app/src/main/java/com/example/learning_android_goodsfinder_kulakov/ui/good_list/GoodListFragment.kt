@@ -17,6 +17,7 @@ import com.example.learning_android_goodsfinder_kulakov.models.Good
 import com.example.learning_android_goodsfinder_kulakov.models.SortOrder
 import com.example.learning_android_goodsfinder_kulakov.ui.adapters.GoodAdapter
 import com.example.learning_android_goodsfinder_kulakov.ui.add_good.AddGoodFragment
+import com.example.learning_android_goodsfinder_kulakov.ui.main.MainActivity
 
 class GoodListFragment : Fragment(), GoodAdapter.Listener, MenuProvider,
     SearchView.OnQueryTextListener, DialogInterface.OnClickListener, FragmentResultListener {
@@ -79,8 +80,12 @@ class GoodListFragment : Fragment(), GoodAdapter.Listener, MenuProvider,
 
     private fun openAddGoodFragment(id: String? = null, edit: Boolean = false) {
         val fragment = AddGoodFragment.createInstance(id, edit)
+
+        val isLandscapeOrTablet = (requireActivity() as MainActivity).isLandscapeOrTablet()
+        val fragmentContainerId = if (isLandscapeOrTablet) R.id.fragmentContainerRight else R.id.fragmentContainerLeft
+
         requireActivity().supportFragmentManager.beginTransaction()
-            .replace(R.id.fragmentContainerLeft, fragment)
+            .replace(fragmentContainerId, fragment)
             .addToBackStack(null)
             .commit()
     }

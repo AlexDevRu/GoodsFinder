@@ -19,4 +19,6 @@ class MainActivity : AppCompatActivity() {
             .replace(R.id.fragmentContainerLeft, GoodListFragment())
             .commit()
     }
+
+    fun isLandscapeOrTablet() = binding.fragmentContainerRight != null
 }

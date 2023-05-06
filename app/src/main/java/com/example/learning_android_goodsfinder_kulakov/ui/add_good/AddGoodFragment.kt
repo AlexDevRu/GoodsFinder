@@ -27,6 +27,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.bumptech.glide.Glide
 import com.example.learning_android_goodsfinder_kulakov.R
 import com.example.learning_android_goodsfinder_kulakov.databinding.ActivityAddGoodBinding
+import com.example.learning_android_goodsfinder_kulakov.ui.Extensions.disable
 import com.example.learning_android_goodsfinder_kulakov.ui.Extensions.stringText
 import com.example.learning_android_goodsfinder_kulakov.ui.Utils
 import kotlinx.coroutines.flow.collectLatest
@@ -85,11 +86,11 @@ class AddGoodFragment : Fragment(), View.OnClickListener, DialogInterface.OnClic
         binding.btnSave.isVisible = editMode || addMode
 
         if (!editMode && !addMode) {
-            binding.etName.inputType = InputType.TYPE_NULL
-            binding.etDescription.inputType = InputType.TYPE_NULL
-            binding.etWhereFound.inputType = InputType.TYPE_NULL
-            binding.etWhoFound.inputType = InputType.TYPE_NULL
-            binding.etWhereTake.inputType = InputType.TYPE_NULL
+            binding.etName.disable()
+            binding.etDescription.disable()
+            binding.etWhereFound.disable()
+            binding.etWhoFound.disable()
+            binding.etWhereTake.disable()
         }
 
         if (editMode || addMode) {
